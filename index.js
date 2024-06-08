@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Register = require("./Controllers/Register");
+const Login = require("./Controllers/Login");
 require("dotenv").config();
 
 const app = express();
@@ -29,3 +30,4 @@ mongoose
   });
 
 app.post("/register", Register.Register);
+app.post("/login", Login.Login);
