@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const Register = require("./Controllers/Register");
 const Login = require("./Controllers/Login");
 const Logout = require("./Controllers/Logout");
+const GenerateTicket = require("./Controllers/GenerateTicket");
 require("dotenv").config();
 
 const app = express();
@@ -33,3 +34,4 @@ mongoose
 app.post("/register", Register.Register);
 app.post("/login", Login.Login);
 app.post("/logout", Logout.Logout);
+app.post("/getTicket", GenerateTicket.GenerateTicket);

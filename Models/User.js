@@ -36,8 +36,24 @@ const userSchema = new Schema(
 
 // Queue Schema
 const queueSchema = new mongoose.Schema({
-  ticketNumber: { type: Number, required: true, unique: true },
-  createdAt: { type: Date, default: Date.now },
+  ticketNumber: {
+    type: Number,
+  },
+  name: {
+    type: String,
+    required: [true, "Name is required"],
+  },
+  email: {
+    type: String,
+    required: [true, "Email address is required"],
+    unique: true,
+  },
+  sessionTime: {
+    type: String,
+  },
+  description: {
+    type: String,
+  },
 });
 
 const User = mongoose.model("User", userSchema);
