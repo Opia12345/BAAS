@@ -1,6 +1,8 @@
 const { Queue, User } = require("../Models/User");
 const yup = require("yup");
 
+const MAX_USERS_PER_SESSION = 15;
+
 const getSessionTime = (currentTime) => {
   const hours = currentTime.getHours();
   if (hours >= 8 && hours < 10) {
@@ -12,8 +14,19 @@ const getSessionTime = (currentTime) => {
   } else if (hours >= 14 && hours < 16) {
     return "2-4";
   } else {
-    return "No available sessions, Please try again tomorrow.";
+    return null;
   }
+};
+
+const getNextAvailableSession = async (currentTime) => {
+  const sessions = ["8-10", "10-12", "12-2", "2-4"];
+  for (const session of sessions) {
+    const sessionUsers = await Queue.countDocuments({ sessionTime: session });
+    if (sessionUsers < MAX_USERS_PER_SESSION) {
+      return session;
+    }
+  }
+  return null;
 };
 
 const Validation = yup.object().shape({
@@ -25,7 +38,6 @@ const Validation = yup.object().shape({
   description: yup.string().required("Description is required"),
 });
 
-// Generate a special ticket
 exports.GenerateTicket = async (req, res) => {
   const { name, email, description } = req.body;
 
@@ -36,38 +48,61 @@ exports.GenerateTicket = async (req, res) => {
       { abortEarly: false }
     );
 
-    // Check if user and service exist
-    const user = await User.findOne({ name });
-    const userMail = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).json({ error: "User not found" });
     }
 
-    if (!userMail) {
-      return res.status(404).send("User with provided email not found");
+    const existingTicket = await Queue.findOne({ email });
+
+    if (existingTicket) {
+      return res
+        .status(400)
+        .json({ error: "User has already booked a ticket" });
     }
 
-    // Generate a unique ticket number
+    const currentTime = new Date();
+    let sessionTime = getSessionTime(currentTime);
+
+    while (sessionTime) {
+      const sessionUsers = await Queue.countDocuments({ sessionTime });
+      if (sessionUsers < MAX_USERS_PER_SESSION) {
+        break;
+      }
+      sessionTime = await getNextAvailableSession(currentTime);
+    }
+
+    if (!sessionTime) {
+      return res
+        .status(400)
+        .json({ error: "No available sessions, Please try again tomorrow." });
+    }
+
     const lastTicket = await Queue.findOne().sort({ ticketNumber: -1 });
     const ticketNumber = lastTicket ? lastTicket.ticketNumber + 1 : 1;
 
-    // Determine the session time
-    const currentTime = new Date();
-    const sessionTime = getSessionTime(currentTime);
-
-    // Create new ticket
     const ticket = new Queue({
       name,
       email,
       ticketNumber,
       sessionTime: sessionTime,
       description,
+      status: "waiting",
+      issueTime: currentTime,
     });
 
     await ticket.save();
-    res.status(201).send(ticket);
+    res.status(201).json(ticket);
   } catch (error) {
-    res.status(500).send(error.message);
+    if (error.name === "ValidationError") {
+      const errors = error.inner.reduce((acc, err) => {
+        acc[err.path] = err.message;
+        return acc;
+      }, {});
+      return res.status(400).json({ errors });
+    }
+
+    res.status(500).json({ error: error.message });
   }
 };

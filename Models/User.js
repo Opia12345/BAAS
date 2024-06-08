@@ -53,6 +53,13 @@ const queueSchema = new mongoose.Schema({
   },
   description: {
     type: String,
+    required: [true, "Description is required"],
+  },
+  status: {
+    type: String,
+  },
+  issueTime: {
+    type: String,
   },
 });
 
