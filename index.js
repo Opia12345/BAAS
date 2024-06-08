@@ -7,6 +7,7 @@ const Login = require("./Controllers/Login");
 const Logout = require("./Controllers/Logout");
 const GenerateTicket = require("./Controllers/GenerateTicket");
 const DeleteTicket = require("./Controllers/DeleteTicket");
+const AllTickets = require("./Controllers/AllTickets");
 require("dotenv").config();
 
 const app = express();
@@ -37,3 +38,4 @@ app.post("/login", Login.Login);
 app.post("/logout", Logout.Logout);
 app.post("/getTicket", GenerateTicket.GenerateTicket);
 app.delete("/ticket/:id", DeleteTicket.DeleteTicket);
+app.get("/all-tickets", AllTickets.AllTickets);
