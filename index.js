@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const Register = require("./Controllers/Register");
 require("dotenv").config();
 
 const app = express();
@@ -26,3 +27,5 @@ mongoose
   .catch((err) => {
     console.log(err.message);
   });
+
+app.post("/register", Register.Register);

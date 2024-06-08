@@ -24,6 +24,12 @@ const userSchema = new Schema(
     otp: {
       type: Number,
     },
+    resetToken: {
+      type: String,
+    },
+    resetTokenExpiration: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );
