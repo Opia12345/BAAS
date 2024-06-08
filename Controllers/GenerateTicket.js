@@ -93,7 +93,9 @@ exports.GenerateTicket = async (req, res) => {
     });
 
     await ticket.save();
-    res.status(201).json(ticket);
+    res.status(201).json({
+      ticketId: ticket._id,
+    });
   } catch (error) {
     if (error.name === "ValidationError") {
       const errors = error.inner.reduce((acc, err) => {
