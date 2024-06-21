@@ -38,7 +38,6 @@ exports.Register = async (req, res) => {
       { abortEarly: false }
     );
 
-    // CHECK FOR EXISTING USERS
     const existingMail = await User.findOne({ email });
 
     if (existingMail) {
