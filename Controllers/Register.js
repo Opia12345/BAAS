@@ -6,7 +6,6 @@ const { User } = require("../Models/User");
 const yup = require("yup");
 require("dotenv").config();
 
-// NODEMAILER
 const transporter = nodemailer.createTransport({
   service: process.env.MAIL_SERVICE,
   auth: {
