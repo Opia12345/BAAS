@@ -33,6 +33,7 @@ mongoose
     console.log(err.message);
   });
 
+//ALL ROUTES
 app.post("/register", Register.Register);
 app.post("/login", Login.Login);
 app.post("/logout", Logout.Logout);
