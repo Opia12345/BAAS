@@ -33,7 +33,7 @@ mongoose
     console.log(err.message);
   });
 
-//ENDPOINTS
+//API ENDPOINTS
 app.post("/register", Register.Register);
 app.post("/login", Login.Login);
 app.post("/logout", Logout.Logout);
